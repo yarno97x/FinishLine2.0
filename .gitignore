@@ -1,0 +1,7 @@
+.vscode
+build
+build.sh
+debug.sh
+CMakeLists.txt
+vcpkg-configuration.json
+vcpkg.json
