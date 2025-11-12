@@ -4,8 +4,9 @@
 #include "libxml/HTMLparser.h"
 #include "libxml/xpath.h"
 #include <iostream>
-#include <json.hpp>
+#include <rapidcsv.h>
 #include <vector>
+#include <stdlib.h>
 
 
 // ["TrackId", "Code", "Team", "Q1", "Q2", "Q3", "Grid", "Year"]
@@ -14,9 +15,9 @@ struct Record
     int trackId;
     std::string code;
     std::string team;
-    double q1;
-    double q2;
-    double q3;
+    std::string q1;
+    std::string q2;
+    std::string q3;
     int grid;
     int year;
 };
@@ -27,6 +28,5 @@ class WebScraper
         WebScraper();
 
         htmlDocPtr get_request(std::string url);
-
         std::vector<Record> get_data(htmlDocPtr doc);
 };

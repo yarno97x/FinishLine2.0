@@ -68,6 +68,10 @@ std::vector<Record> WebScraper::get_data(htmlDocPtr doc)
         return s;
     }
 
+    std::vector<Record> records;
+    int grid, year;
+    std::string q1, q2, q3, team, code, temp;
+    int j = 0;
     int size = (nodes->nodeNr < 0) ? 0 : nodes->nodeNr;
     for (int i = 0; i < size; ++i)
     {
@@ -77,14 +81,38 @@ std::vector<Record> WebScraper::get_data(htmlDocPtr doc)
         for (xmlNodePtr td = trNode->children; td; td = td->next) {
             if (td->type == XML_ELEMENT_NODE && xmlStrEqual(td->name, BAD_CAST "td")) {
                 xmlChar* content = xmlNodeGetContent(td);
-                std::cout << " " << content << " | ";
+                temp = reinterpret_cast<const char*>(content);
+                switch (j++)
+                {
+                    case 0:
+                        grid = temp != "NC" ? std::stoi(temp, NULL, 10):-1;
+                        break;
+                    case 2:
+                        temp = reinterpret_cast<const char*>(content);
+                        code = temp.substr(temp.length() > 3? temp.length() - 3:0);
+                        break;
+                    case 3:
+                        team = temp;
+                        break;
+                    case 4:
+                        q1 = temp;
+                        break;
+                    case 5:
+                        q2 = temp;
+                        break;
+                    case 6:
+                        q3 = temp;
+                        break;
+                    default:
+                        break;
+                }
                 xmlFree(content);
             }
         }
-        std::cout << "\n";
+        j = 0;
+        records.push_back(Record( {-1, code, team, q1, q2, q3, grid, -1} ));
     }
     xmlXPathFreeObject(tbody);
     xmlXPathFreeContext(context);
-    std::vector<Record> s = {};
-    return s;
+    return records;
 }
