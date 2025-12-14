@@ -1,11 +1,54 @@
 #include "imputer.h"
 
-rapidcsv::Document Imputer::mean(std::vector<std::string> columns);
+Imputer::Imputer(rapidcsv::Document& doc) (doc) 
+{
+    if (doc == nullptr)
+    {
+        return;
+    }
+    features = doc.GetColumnNames();
+}
 
-rapidcsv::Document Imputer::median(std::vector<std::string> columns);
+void Imputer::fit_mean(const std::vector<std::string_view>& columns)
+{
+    std::vector<ColumnChange> newParameters{};
+    double total;
+    int idx;
+    for (const auto& column : columns)
+    {
+        if (std::find(features.begin(), features.end(), column) != features.end())
+        {
+            total = 0;
+            idx = 0;
 
-rapidcsv::Document Imputer::constant(std::vector<std::string> columns);
+            for (const auto& item : dataset.GetColumn(column))
+            {
+                // Skip imputable items
+                if (item.empty()) continue;
 
-rapidcsv::Document Imputer::frequency(std::vector<std::string> columns);
+                // Check all values are numeric
+                size_t pos = 0;
+                try 
+                {
+                    total += std::stod(item, &pos);
+                    if (pos != item.size()) throw std::invalid_argument( "Invalid input: '" + item + "' is not a valid number");
+                    idx++;
+                } catch (const std::exception&) 
+                {
+                    throw std::invalid_argument( "Invalid input: '" + item + "' is not a valid number");
+                }
+            }
 
-Imputer::Imputer(rapidcsv::Document doc) : dataset(doc) {}
+            if (idx <= 0) throw std::invalid_argument("No values were properly formatted in column " + std::string(column));
+
+            newParameters.push_back(ColumnChange{
+                std::string(column),
+                std::to_string(total / idx)
+            });
+        }
+    }
+    
+    parameters.clear();
+    parameters = std::move(newParameters);
+    mode = TRANSFORM::MEAN;
+}
