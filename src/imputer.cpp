@@ -5,7 +5,7 @@ Imputer::Imputer(rapidcsv::Document& doc) : dataset(doc)
     features = doc.GetColumnNames();
 }
 
-void Imputer::fit_mean(const std::vector<std::string_view>& columns)
+void Imputer::fit_mean(const std::vector<std::string>& columns)
 {
     std::vector<ColumnChange> newParameters{};
     double total;
@@ -17,7 +17,7 @@ void Imputer::fit_mean(const std::vector<std::string_view>& columns)
             total = 0;
             idx = 0;
 
-            for (const auto& item : dataset.GetColumn(column))
+            for (const auto& item : dataset.GetColumn<std::string>(std::string(column)))
             {
                 // Skip imputable items
                 if (item.empty()) continue;
