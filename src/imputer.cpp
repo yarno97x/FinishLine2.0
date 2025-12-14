@@ -1,11 +1,7 @@
 #include "imputer.h"
 
-Imputer::Imputer(rapidcsv::Document& doc) (doc) 
+Imputer::Imputer(rapidcsv::Document& doc) : dataset(doc) 
 {
-    if (doc == nullptr)
-    {
-        return;
-    }
     features = doc.GetColumnNames();
 }
 
