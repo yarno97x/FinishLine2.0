@@ -1,0 +1,8 @@
+{
+  "name": "finishline",
+  "version": "0.1.0",
+  "dependencies": [
+    "curl",
+    "libxml2"
+  ]
+}
