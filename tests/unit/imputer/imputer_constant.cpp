@@ -1,4 +1,4 @@
-// test_imputer_fit_constabt.cpp
+// test_imputer_fit_constant.cpp
 
 #include "imputer.h"
 #include "helpers.h"
