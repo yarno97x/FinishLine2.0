@@ -185,7 +185,6 @@ void Imputer::applyImputerTransform()
         if (std::find(features.begin(), features.end(), it->first) == features.end())
             throw std::invalid_argument("Did not find " + it->first);
 
-        std::cout << it->first << std::endl;
         for (int i = 0; i < dataset.GetRowCount(); i++)
         {
             item = dataset.GetCell<std::string>(it->first, i);
