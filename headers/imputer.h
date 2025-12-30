@@ -12,7 +12,7 @@ class Imputer {
         void fit_mean(const std::vector<std::string>& columns, bool clear = false);
         void fit_median(const std::vector<std::string>& columns, bool clear = false);
         void fit_frequency(const std::vector<std::string>& columns, bool clear = false); 
-        void constant(const std::vector<std::string>& columns, const std::string value, bool clear = false);
+        void fit_constant(const std::map<std::string, std::string>& replacements, bool clear = false);
         void applyTransform();
         std::map<std::string, std::string> parameters{};
         bool fitted = false;
@@ -20,4 +20,5 @@ class Imputer {
     private:
         rapidcsv::Document& dataset;
         std::vector<std::string> features{};
+        void updateParameters(std::map<std::string, std::string>& newParameters);
 };
