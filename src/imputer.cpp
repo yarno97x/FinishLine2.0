@@ -174,3 +174,36 @@ void Imputer::fit_constant(const std::map<std::string, std::string>& replacement
     fitted |= !replacements.empty();
     updateParameters(newParameters);
 }
+
+void Imputer::applyImputerTransform()
+{
+    std::string item;
+    std::string current;
+
+    for (auto it = parameters.begin(); it != parameters.end(); it++)
+    {
+        if (std::find(features.begin(), features.end(), it->first) == features.end())
+            throw std::invalid_argument("Did not find " + it->first);
+
+        std::cout << it->first << std::endl;
+        for (int i = 0; i < dataset.GetRowCount(); i++)
+        {
+            item = dataset.GetCell<std::string>(it->first, i);
+            if (item.empty() || item == "NaN") 
+            {
+                dataset.SetCell(it->first, i, it->second);
+                continue;
+            }
+
+            // Skip all numeric values 
+            size_t pos = 0;
+            try 
+            {
+                current = std::stod(item, &pos);
+                if (pos != item.size()) throw std::invalid_argument( "Invalid input: '" + item + "' is not a valid number");
+            } catch (const std::exception&) {
+                dataset.SetCell(it->first, i, it->second);
+            }
+        }
+    }
+}
