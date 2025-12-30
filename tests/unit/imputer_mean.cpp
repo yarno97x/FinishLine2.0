@@ -66,7 +66,7 @@ TEST(ImputerFitMean, UnknownColumnThrows) {
 
 TEST(ImputerFitMean, AllMissingColumnThrowsOrNaN) {
   auto doc = MakeDoc();
-  
+
   doc.SetColumn<std::string>(0, {"NaN", "NaN", "NaN"});
   doc.SetColumnName(0, "z");
 
