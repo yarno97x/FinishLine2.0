@@ -15,9 +15,9 @@ class Imputer {
         void constant(const std::vector<std::string>& columns, const std::string value, bool clear = false);
         void applyTransform();
         std::map<std::string, std::string> parameters{};
+        bool fitted = false;
 
     private:
         rapidcsv::Document& dataset;
-        bool fitted = false;
         std::vector<std::string> features{};
 };
