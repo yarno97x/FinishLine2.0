@@ -67,8 +67,6 @@ TEST(ImputerFitMean, UnknownColumnThrows) {
 TEST(ImputerFitMean, AllMissingColumnThrowsOrNaN) {
   auto doc = MakeDoc();
   
-  const double NaN = std::numeric_limits<double>::quiet_NaN();
-
   doc.SetColumn<std::string>(0, {"NaN", "NaN", "NaN"});
   doc.SetColumnName(0, "z");
 
@@ -91,4 +89,27 @@ TEST(ImputerFitMean, FitsOnlySpecifiedColumns) {
   ExpectNear(std::stod(imp.parameters["a"]), 2.0);
 
   EXPECT_THROW(std::stod(imp.parameters["b"]), std::invalid_argument);
+}
+
+TEST(ImputerFitMean, CheckNotFitted) {
+  auto doc = MakeDoc();
+
+  doc.SetColumn<std::string>(0, {"NaN", "NaN", "NaN"});
+  doc.SetColumnName(0, "z");
+
+  Imputer imp(doc);
+
+  EXPECT_FALSE(imp.fitted);
+}
+
+TEST(ImputerFitMean, CheckFitted) {
+  auto doc = MakeDoc();
+
+  doc.SetColumn<std::string>(0, {"1.0", "NaN", "9.0", "3.0"});
+  doc.SetColumnName(0, "score");
+
+  Imputer imp(doc);
+  imp.fit_mean({"score"});
+
+  EXPECT_TRUE(imp.fitted);
 }

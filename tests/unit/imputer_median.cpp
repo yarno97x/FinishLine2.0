@@ -87,3 +87,26 @@ TEST(ImputerFitMedian, FitsOnlySpecifiedColumns) {
 
   EXPECT_THROW(std::stod(imp.parameters["b"]), std::invalid_argument);
 }
+
+TEST(ImputerFitMedian, CheckNotFitted) {
+  auto doc = MakeDoc();
+
+  doc.SetColumn<std::string>(0, {"NaN", "NaN", "NaN"});
+  doc.SetColumnName(0, "z");
+
+  Imputer imp(doc);
+
+  EXPECT_FALSE(imp.fitted);
+}
+
+TEST(ImputerFitMedian, CheckFitted) {
+  auto doc = MakeDoc();
+
+  doc.SetColumn<std::string>(0, {"1.0", "NaN", "9.0", "3.0"});
+  doc.SetColumnName(0, "score");
+
+  Imputer imp(doc);
+  imp.fit_median({"score"});
+
+  EXPECT_TRUE(imp.fitted);
+}
