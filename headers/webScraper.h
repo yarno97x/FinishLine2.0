@@ -27,6 +27,6 @@ class WebScraper
     public:
         WebScraper();
 
-        htmlDocPtr get_request(std::string url);
-        std::vector<Record> get_data(htmlDocPtr doc);
+        static htmlDocPtr get_request(const std::string &url);
+        static std::vector<Record> get_data(htmlDocPtr doc);
 };

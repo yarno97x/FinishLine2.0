@@ -14,6 +14,7 @@ class Imputer {
         void fit_frequency(const std::vector<std::string>& columns, bool clear = false); 
         void fit_constant(const std::map<std::string, std::string>& replacements, bool clear = false);
         void applyImputerTransform();
+        void fillHeap(const std::string &column, std::priority_queue<double> &heap);
         std::map<std::string, std::string> parameters{};
         bool fitted = false;
 

@@ -1,21 +1,21 @@
 #include "webScraper.h"
 
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
-    std::string* response = static_cast<std::string*>(userp);
+    auto* response = static_cast<std::string*>(userp);
     response->append(static_cast<char*>(contents), size * nmemb);
     return size * nmemb;
 }
 
 WebScraper::WebScraper()
 {
-    std::cout << "Web Scraper Activated" << std::endl;
+    std::cout << "Web Scraper Activated" << "\n";
 }
 
-htmlDocPtr WebScraper::get_request(std::string url) {
+htmlDocPtr WebScraper::get_request(const std::string &url) {
     CURL* curl = curl_easy_init();
     std::string result;
 
-    if (!curl) {
+    if (curl == nullptr) {
         std::cerr << "Failed to init curl\n";
         return nullptr;
     }
@@ -42,7 +42,7 @@ htmlDocPtr WebScraper::get_request(std::string url) {
         return nullptr;
     }
 
-    htmlDocPtr doc = htmlReadMemory(result.c_str(), result.size(), nullptr, nullptr, HTML_PARSE_NOERROR);
+    htmlDocPtr doc = htmlReadMemory(result.c_str(), (int) result.size(), nullptr, nullptr, HTML_PARSE_NOERROR);
     return doc;
 }
 
@@ -51,41 +51,47 @@ std::vector<Record> WebScraper::get_data(htmlDocPtr doc)
     xmlXPathContextPtr context = xmlXPathNewContext(doc);
     xmlXPathObjectPtr tbody = xmlXPathEvalExpression(BAD_CAST "//tbody/tr", context);
 
-    if (!tbody)
+    if (tbody == nullptr)
     {
-        std::cerr << "No tbody found" << std::endl; 
+        std::cerr << "No tbody found" << "\n"; 
         xmlXPathFreeContext(context);
-        std::vector<Record> s = {};
-        return s;
+        std::vector<Record> emptySetOfRecords = {};
+        return emptySetOfRecords;
     }
 
     xmlNodeSetPtr nodes = tbody->nodesetval;
-    if (!nodes) {
+    if (nodes == nullptr) {
         std::cerr << "No nodes found\n";
         xmlXPathFreeObject(tbody);
         xmlXPathFreeContext(context);
-        std::vector<Record> s = {};
-        return s;
+        std::vector<Record> emptySetOfRecords = {};
+        return emptySetOfRecords;
     }
 
     std::vector<Record> records;
-    int grid, year;
-    std::string q1, q2, q3, team, code, temp;
-    int j = 0;
+    int grid;
+    int year;
+    std::string quali1;
+    std::string quali2;
+    std::string quali3;
+    std::string team;
+    std::string code;
+    std::string temp;
+    int childIndex = 0;
     int size = (nodes->nodeNr < 0) ? 0 : nodes->nodeNr;
     for (int i = 0; i < size; ++i)
     {
         xmlNodePtr trNode = nodes->nodeTab[i];
 
         // Iterate over <td> children
-        for (xmlNodePtr td = trNode->children; td; td = td->next) {
-            if (td->type == XML_ELEMENT_NODE && xmlStrEqual(td->name, BAD_CAST "td")) {
+        for (xmlNodePtr td = trNode->children; td != nullptr; td = td->next) {
+            if (td->type == XML_ELEMENT_NODE && xmlStrEqual(td->name, BAD_CAST "td") == 1) {
                 xmlChar* content = xmlNodeGetContent(td);
                 temp = reinterpret_cast<const char*>(content);
-                switch (j++)
+                switch (childIndex++)
                 {
                     case 0:
-                        grid = temp != "NC" ? std::stoi(temp, NULL, 10):-1;
+                        grid = temp != "NC" ? std::stoi(temp, nullptr, 10):-1;
                         break;
                     case 2:
                         temp = reinterpret_cast<const char*>(content);
@@ -95,13 +101,13 @@ std::vector<Record> WebScraper::get_data(htmlDocPtr doc)
                         team = temp;
                         break;
                     case 4:
-                        q1 = temp;
+                        quali1 = temp;
                         break;
                     case 5:
-                        q2 = temp;
+                        quali2 = temp;
                         break;
                     case 6:
-                        q3 = temp;
+                        quali3 = temp;
                         break;
                     default:
                         break;
@@ -109,8 +115,8 @@ std::vector<Record> WebScraper::get_data(htmlDocPtr doc)
                 xmlFree(content);
             }
         }
-        j = 0;
-        records.push_back(Record( {-1, code, team, q1, q2, q3, grid, -1} ));
+        childIndex = 0;
+        records.push_back(Record( {-1, code, team, quali1, quali2, quali3, grid, -1} ));
     }
     xmlXPathFreeObject(tbody);
     xmlXPathFreeContext(context);

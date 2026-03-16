@@ -7,12 +7,12 @@
 #include <cmath>
 #include <stdexcept>
 
-static inline void ExpectNear(double a, double b, double eps = 1e-2) {
-  ASSERT_TRUE(std::fabs(a - b) <= eps) << "Expected " << a << " ~= " << b;
+static inline void ExpectNear(double value1, double value2, double eps = 1e-2) {
+  ASSERT_TRUE(std::fabs(value1 - value2) <= eps) << "Expected " << value1 << " ~= " << value2;
 }
 
-static inline bool IsNaN(double x) {
-  return std::isnan(x);
+static inline bool IsNaN(double value) {
+  return std::isnan(value);
 }
 
 static rapidcsv::Document MakeDoc() {
