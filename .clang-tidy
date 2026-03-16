@@ -1,0 +1,16 @@
+Checks: >
+  -*,
+  clang-analyzer-*,
+  bugprone-*,
+  performance-*,
+  modernize-*,
+  readability-*,
+  portability-*,
+  -readability-identifier-naming,
+  -readability-magic-numbers,
+  -modernize-use-trailing-return-type
+WarningsAsErrors: >
+  clang-analyzer-*,
+  bugprone-*
+HeaderFilterRegex: '.*/(src|tests)/.*'
+FormatStyle: none

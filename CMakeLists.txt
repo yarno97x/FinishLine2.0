@@ -5,6 +5,10 @@ project(FinishLine LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# ---- Clang tidy ----
+set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+
+
 # ---- Headers ----
 set(PROJECT_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/headers")
 
