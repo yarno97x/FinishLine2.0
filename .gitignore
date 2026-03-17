@@ -4,3 +4,4 @@ build.sh
 debug.sh
 run.sh
 run_tests.sh
+data/
