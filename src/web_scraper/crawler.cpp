@@ -1,6 +1,6 @@
 #include <webScraper.h>
-#include "crawler.h"
 #include <fstream>
+#include "crawler.h"
 
 std::vector<std::string> Crawler::load_urls()
 {
@@ -33,54 +33,53 @@ void Crawler::save_scraped_urls()
     for (const std::string &url : urls_already_scraped) {
         url_file << url << "\n";
     }
-
 }
 
 void Crawler::worker_thread(int start_index) 
 {
-    {
-        std::lock_guard<std::mutex> lock(print_mutex);
-        std::cout << "Thread " << start_index + 1 << " started\n";
-    }
     std::string current_url{};
-    std::vector<Record> new_record;
+    std::vector<Record> parsed_list;
     int size = static_cast<int>(all_urls.size());
+
+    // Privatized list of new records
+    std::vector<std::vector<Record>> _new_records;
+    std::vector<std::string> _urls_scraped;
 
     for (start_index; start_index < size; start_index += worker_count) 
     {
         current_url = all_urls.at(start_index);
-        {
-            std::lock_guard<std::mutex> lock3(visited_mutex);
-            if (urls_already_scraped.find(current_url) != urls_already_scraped.end()) {
+        _urls_scraped.emplace_back(current_url);
+
+        // Scrape the URL 
+        parsed_list = WebScraper::scrapeURL(current_url);
+
+        if (parsed_list.empty()) {
+            _urls_scraped.pop_back();
+            continue;
+        } 
+
+        {   // Save the record
+            std::lock_guard<std::mutex> print_lock(print_mutex);
+            std::cout << current_url << "\n";
+            for (const Record& record : parsed_list) {
+                std::cout << "\t" << record.code << " " << record.grid << "\n";
+            }
+        }
+        _new_records.emplace_back(parsed_list);
+    }
+
+    int url_index = 0;
+    for (auto& record_list : _new_records) {
+        {   // Check the url isn't already in the vector
+            std::lock_guard<std::mutex> existence_lock(visited_mutex);
+            if (urls_already_scraped.find(_urls_scraped.at(url_index++)) != urls_already_scraped.end()) {
                 continue;
             }
             urls_already_scraped.insert(current_url);
         }
-
-        // Scrape url 
-        new_record = WebScraper::scrapeURL(current_url);
-
-        if (new_record.empty()) {
-            {
-                std::lock_guard<std::mutex> lock(visited_mutex);
-                urls_already_scraped.erase(current_url);
-            }
-            continue;
-        } 
-        std::lock_guard<std::mutex> lock3(visited_mutex);
-        urls_already_scraped.insert(current_url);
-
-        // Save the record
-        {
-            std::lock_guard<std::mutex> lock(print_mutex);
-            for (const Record& record : new_record) {
-                std::cout << record.code << " " << record.grid << "\n";
-            }
-        }
-
-        {
-            std::lock_guard<std::mutex> lock(record_mutex);
-            new_records.insert(new_records.end(), new_record.begin(), new_record.end());
+        {   // Insert the record list inside the shared vector
+            std::lock_guard<std::mutex> insertion_lock(write_mutex);
+            new_records.insert(new_records.end(), record_list.begin(), record_list.end());
         }
     }
 }

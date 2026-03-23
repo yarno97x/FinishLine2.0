@@ -18,7 +18,7 @@ class Crawler {
 
     private :
         std::vector<Record> new_records;
-        std::mutex record_mutex;
+        std::mutex write_mutex;
         std::mutex print_mutex;
         std::mutex visited_mutex;
         std::vector<std::string> all_urls;
