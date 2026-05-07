@@ -1,6 +1,6 @@
 #include <vector>
 #include <string>
-#include <rapidcsv.h>
+#include "rapidcsv.h"
 #include <algorithm>
 #include <stdexcept>
 #include <queue>
@@ -13,8 +13,7 @@ class Imputer {
         void fit_median(const std::vector<std::string>& columns, bool clear = false);
         void fit_frequency(const std::vector<std::string>& columns, bool clear = false); 
         void fit_constant(const std::map<std::string, std::string>& replacements, bool clear = false);
-        void applyImputerTransform();
-        void fillHeap(const std::string &column, std::priority_queue<double> &heap);
+        void apply();
         std::map<std::string, std::string> parameters{};
         bool fitted = false;
 
@@ -22,4 +21,5 @@ class Imputer {
         rapidcsv::Document& dataset;
         std::vector<std::string> features{};
         void updateParameters(std::map<std::string, std::string>& newParameters);
+        void fillHeap(const std::string &column, std::priority_queue<double> &heap);
 };

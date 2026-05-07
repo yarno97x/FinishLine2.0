@@ -24,7 +24,7 @@ TEST(ImputerTransformTest, CheckAllImputed) {
   imp.fit_median( {"b"} );
   imp.fit_constant( {{"o", "3.67"}} );
   imp.fit_frequency( {"c"} );
-  imp.applyImputerTransform();
+  imp.apply();
 
   ExpectNear(doc.GetCell<double>("a", 3), 5.0/3);
   ExpectNear(doc.GetCell<double>("b", 1), 10.0);
