@@ -10,11 +10,7 @@
 
 class Crawler {
     public :
-        static std::vector<std::string> load_urls();
-        static std::unordered_set<std::string> load_urls_already_scraped();
-        void save_scraped_urls();
         void scrape_urls();
-        void worker_thread(int start_index);
 
     private :
         std::vector<Record> new_records;
@@ -25,4 +21,8 @@ class Crawler {
         std::unordered_set<std::string> urls_already_scraped;
         int size;
         int worker_count;
+        void worker_thread(int start_index);
+        static std::vector<std::string> load_urls();
+        static std::unordered_set<std::string> load_urls_already_scraped();
+        void save_scraped_urls();
 };
