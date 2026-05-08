@@ -7,7 +7,7 @@ Imputer::Imputer(rapidcsv::Document& doc) : dataset(doc)
 
 void Imputer::updateParameters(std::map<std::string, std::string>& newParameters)
 {
-    for (auto &parameter : parameters)
+    for (auto &parameter : newParameters)
     {
         parameters[parameter.first] = parameter.second;
     }
@@ -167,7 +167,7 @@ void Imputer::fit_constant(const std::map<std::string, std::string>& replacement
     updateParameters(newParameters);
 }
 
-void Imputer::applyImputerTransform()
+void Imputer::apply()
 {
     std::string item;
 
