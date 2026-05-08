@@ -17,7 +17,7 @@ class Scaler {
         Scaler(rapidcsv::Document& doc);
 
         void fit_standard(const std::vector<std::string>& columns, bool clear = false);
-        void fit_minmax(const std::vector<std::string> &columns, bool clear = false);
+        void fit_minmax(const std::vector<std::string>& columns, bool clear = false);
         void fit_robust(const std::vector<std::string>& columns, bool clear = false);
 
         void apply();
