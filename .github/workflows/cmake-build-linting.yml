@@ -3,8 +3,26 @@ name: CMake Build/Linting
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - "src/**"
+      - "headers/**"
+      - "tests/**"
+      - ".github/workflows/**"
+      - "vcpkg-configuration.json"
+      - "vcpkg.json"
+      - ".clang-tidy"
+      - "CMakeLists.txt"
   pull_request:
     branches: [ "main" ]
+    paths:
+      - "src/**"
+      - "headers/**"
+      - "tests/**"
+      - ".github/workflows/**"
+      - "vcpkg-configuration.json"
+      - "vcpkg.json"
+      - ".clang-tidy"
+      - "CMakeLists.txt"
 
 env:
   BUILD_TYPE: Release
