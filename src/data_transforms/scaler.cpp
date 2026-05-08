@@ -1,5 +1,4 @@
 #include "scaler.h"
-#include <optional>
 
 Scaler::Scaler(rapidcsv::Document &doc) : dataset(doc)
 {
@@ -68,10 +67,40 @@ void Scaler::fit_standard(const std::vector<std::string> &columns, bool clear)
     updateParameters(newParameters);
 }
 
+bool Scaler::getMinMax(const std::string& column, std::optional<double>& min, std::optional<double>& max) {
+    int idx = 0;
+    for (const auto& item : dataset.GetColumn<std::string>(std::string(column)))
+    {
+        // Skip imputable items
+        if (item.empty() || item == "NaN") { continue; }
+
+        // Check all values are numeric
+        size_t pos = 0;
+        try 
+        {
+            double value = std::stod(item, &pos);
+
+            if (pos != item.size()) {
+                throw std::invalid_argument( "Invalid input: '" + item + "' is not a valid number");
+            }
+
+            if (!min.has_value() || min.value() > value) {
+                min = value;
+            }
+
+            if (!max.has_value() || max.value() < value) {
+                max = value;
+            }
+            idx++;
+        } catch (const std::exception&) {
+            std::cout << "Exception caught\n";
+        }
+    }
+    return idx > 0;
+}
+
 void Scaler::fit_minmax(const std::vector<std::string> &columns, bool clear)
 {
-    std::optional<double> min;
-    std::optional<double> max;
 
     // Loop over values
     std::map<std::string, std::map<std::string, double>> newParameters{};
@@ -81,37 +110,9 @@ void Scaler::fit_minmax(const std::vector<std::string> &columns, bool clear)
     {
         if (std::find(features.begin(), features.end(), column) != features.end())
         {
-            idx = 0;
-
-            for (const auto& item : dataset.GetColumn<std::string>(std::string(column)))
-            {
-                // Skip imputable items
-                if (item.empty() || item == "NaN") { continue; }
-
-                // Check all values are numeric
-                size_t pos = 0;
-                try 
-                {
-                    double value = std::stod(item, &pos);
-
-                    if (pos != item.size()) {
-                        throw std::invalid_argument( "Invalid input: '" + item + "' is not a valid number");
-                    }
-
-                    if (!min.has_value() || min > value) {
-                        min = value;
-                    }
-
-                    if (!max.has_value() || max < value) {
-                        max = value;
-                    }
-                    idx++;
-                } catch (const std::exception&) {
-                    std::cout << "Exception caught\n";
-                }
-            }
-
-            if (idx <= 0) { 
+            std::optional<double> min;
+            std::optional<double> max;
+            if (!getMinMax(column, min, max)) { 
                 throw std::invalid_argument("No values were properly formatted in column " + std::string(column));
             }
             
@@ -247,7 +248,6 @@ void Scaler::apply()
         operate(parameter.first);
     }
 }
-
 
 void Scaler::updateParameters(std::map<std::string, std::map<std::string, double>>& newParameters)
 {
