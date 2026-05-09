@@ -32,10 +32,20 @@ Prerequisites:
 cmake -S . -B build
 cmake --build build
 ```
+
+## Coverage (gcov)
+
+Run tests and generate `gcov` reports:
+
+```bash
+./build.sh coverage
+```
+
+Generated coverage files are written to `coverage/`.
+
 ## Project Goals
 
 - Improve race outcome prediction quality with richer temporal features.
 - Expand model comparisons beyond temporal CNN baselines.
 - Add automated refresh pipelines for new race weekends.
 - Improve UI explainability around confidence, uncertainty, and feature impact.
-

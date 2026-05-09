@@ -21,6 +21,11 @@ list(FILTER CORE_SOURCES EXCLUDE REGEX ".*/main\\.cpp$")
 add_library(finishline_core ${CORE_SOURCES})
 target_include_directories(finishline_core PUBLIC "${PROJECT_INCLUDE_DIR}")
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_options(--coverage)
+    add_link_options(--coverage)
+endif()
+
 # ---- Dependencies ----
 find_package(CURL REQUIRED)
 find_package(LibXml2 REQUIRED)
